@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -8,6 +8,7 @@ from django.utils.module_loading import import_string
 import requests
 
 from .models import ActivitiConfig
+from .types import JSONObject
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,9 @@ class Activiti:
             return {}
         return {"Authorization": self.config.auth_header}
 
-    def request(self, path: str, method="GET", *args, **kwargs):
+    def request(
+        self, path: str, method="GET", *args, **kwargs
+    ) -> Union[JSONObject, List[JSONObject], bytes]:
         assert not path.startswith("/"), "Provide relative API paths"
         url = urljoin(self.root_url, path)
 
@@ -50,11 +53,18 @@ class Activiti:
 
         try:
             response.raise_for_status()
-            if response.content:
-                response_data = response.json()
 
-                if isinstance(response_data, (dict, list)):
-                    self.postprocess_response_data(response_data)
+            if response.content:
+                if response.headers["Content-Type"].startswith("application/json"):
+                    response_data = response.json()
+
+                    if isinstance(response_data, (dict, list)):
+                        self.postprocess_response_data(response_data)
+
+                else:
+                    # binary content
+                    response_data = response.content
+
             return response_data
         except Exception:
             try:
