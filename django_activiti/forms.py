@@ -1,10 +1,15 @@
 import base64
-from typing import Union
+from itertools import groupby
+from typing import List, Tuple, Union
 
 from django import forms
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from .api import get_process_definitions
 from .models import ActivitiConfig
+
+Choice = Tuple[str, str]
 
 
 class ActivitiConfigForm(forms.ModelForm):
@@ -66,3 +71,32 @@ class ActivitiConfigForm(forms.ModelForm):
             "basic_auth_username": username,
             "basic_auth_password": password,
         }
+
+
+def get_process_definition_choices() -> List[Tuple[str, List[Choice]]]:
+    definitions = get_process_definitions()
+
+    definitions = sorted(definitions, key=lambda d: (d.key, -d.version))
+    def_by_key = groupby(definitions, lambda x: x.key)
+
+    choices = [
+        (
+            format_html(_("Process: <code>{key}</code>"), key=key),
+            [
+                (
+                    definition.id,
+                    _("{d.name} (version {d.version})").format(d=definition),
+                )
+                for definition in definitions
+            ],
+        )
+        for key, definitions in def_by_key
+    ]
+    return choices
+
+
+class ProcessDefinitionChoicesField(forms.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("max_length", None)
+        kwargs.setdefault("choices", get_process_definition_choices)
+        super().__init__(*args, **kwargs)

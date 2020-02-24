@@ -21,9 +21,14 @@ def get_client_class() -> type:
 
 class Activiti:
     def __init__(self, config: Optional[ActivitiConfig] = None):
-        config = config or ActivitiConfig.get_solo()
-        self.root_url = config.root_url
-        self.auth = {"Authorization": config.auth_header} if config.auth_header else {}
+        self.config = config or ActivitiConfig.get_solo()
+        self.root_url = self.config.root_url
+
+    @property
+    def auth(self) -> dict:
+        if not self.config.auth_header:
+            return {}
+        return {"Authorization": self.config.auth_header}
 
     def request(self, path: str, method="GET", *args, **kwargs):
         assert not path.startswith("/"), "Provide relative API paths"
@@ -61,6 +66,21 @@ class Activiti:
             raise
         finally:
             self.after_request(_ref, response, response_data)
+
+    def get(self, path: str, params=None, *args, **kwargs):
+        return self.request(path, method="GET", params=params, *args, **kwargs)
+
+    def post(self, path: str, data=None, json=None, *args, **kwargs):
+        return self.request(path, method="POST", data=data, json=json, *args, **kwargs)
+
+    def put(self, path: str, data=None, *args, **kwargs):
+        return self.request(path, method="PUT", data=data, *args, **kwargs)
+
+    def patch(self, path: str, data=None, *args, **kwargs):
+        return self.request(path, method="PATCH", data=data, *args, **kwargs)
+
+    def delete(self, path: str, *args, **kwargs):
+        return self.request(path, method="DELETE", *args, **kwargs)
 
     # HOOKS for subclasses
 
