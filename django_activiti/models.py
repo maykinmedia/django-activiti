@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -45,4 +46,15 @@ class ActivitiConfig(SingletonModel):
     def clean(self):
         super().clean()
 
-        # TODO: verify config is correct
+        from .client import get_client_class
+
+        client = get_client_class()(config=self)
+        try:
+            client.request("management/engine")
+        except Exception as exc:
+            raise ValidationError(
+                _(
+                    "Invalid API root '{root}'. Got error: {error} while checking the "
+                    "management/engine endpoint."
+                ).format(root=self.root_url, error=exc)
+            )
