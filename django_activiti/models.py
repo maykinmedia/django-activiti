@@ -13,6 +13,9 @@ class ActivitiConfig(SingletonModel):
         help_text=_("Root URL where the Activiti API is deployed."),
         default="https://activiti.example.com/activiti-app/api",
     )
+    tenant = models.CharField(
+        _("tenant ID"), max_length=100, default="tenant_1", blank=True
+    )
     auth_header = models.TextField(
         _("authorization header"),
         blank=True,
