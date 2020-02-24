@@ -1,0 +1,8 @@
+include *.rst
+include LICENSE
+recursive-include django_activiti *.html
+recursive-include django_activiti *.txt
+recursive-include django_activiti *.po
+global-exclude __pycache__
+global-exclude *.py[co]
+
