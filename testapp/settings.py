@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.sessions",
     "django.contrib.admin",
+    "solo",
     "django_activiti",
     "testapp",
 ]
@@ -45,5 +46,7 @@ TEMPLATES = [
         },
     },
 ]
+
+STATIC_URL = "/static/"
 
 ROOT_URLCONF = "testapp.urls"

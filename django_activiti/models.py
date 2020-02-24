@@ -53,7 +53,7 @@ class ActivitiConfig(SingletonModel):
 
         client = get_client_class()(config=self)
         try:
-            client.request("management/engine")
+            client.get("management/engine")
         except Exception as exc:
             raise ValidationError(
                 _(
