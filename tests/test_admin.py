@@ -25,6 +25,9 @@ def test_enter_basic_auth(requests_mock, django_app, admin_user):
     config.refresh_from_db()
     assert config.auth_header == "Basic ZHVtbXk6c2VjcmV0"
 
+    auth = requests_mock.last_request.headers["Authorization"]
+    assert auth == "Basic ZHVtbXk6c2VjcmV0"
+
 
 @pytest.mark.django_db
 def test_select_process_definition(requests_mock, django_app, admin_user):
