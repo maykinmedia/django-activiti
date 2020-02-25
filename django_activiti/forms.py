@@ -45,10 +45,9 @@ class ActivitiConfigForm(forms.ModelForm):
                 kwargs["initial"].update(creds)
         super().__init__(*args, **kwargs)
 
-    def save(self, *args, **kwargs):
+    def clean(self):
+        super().clean()
         self.set_basic_auth_header()
-        config = super().save(*args, **kwargs)
-        return config
 
     def set_basic_auth_header(self):
         username = self.cleaned_data.get("basic_auth_username")
