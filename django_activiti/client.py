@@ -55,7 +55,9 @@ class Activiti:
             response.raise_for_status()
 
             if response.content:
-                if response.headers["Content-Type"].startswith("application/json"):
+                # json is the default Content-Type
+                content_type = response.headers.get("Content-Type", "application/json")
+                if content_type.startswith("application/json"):
                     response_data = response.json()
 
                     if isinstance(response_data, (dict, list)):
