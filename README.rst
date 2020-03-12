@@ -6,7 +6,7 @@
 Django-Activiti
 ===============
 
-:Version: 0.1.2
+:Version: 0.2.0
 :Source: https://github.com/maykinmedia/django-activiti
 :Keywords: bpmn, process engine, activiti, common ground
 :PythonVersion: 3.7
