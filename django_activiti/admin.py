@@ -13,6 +13,7 @@ from .models import ActivitiConfig
 class ActivitiConfigAdmin(SingletonModelAdmin):
     form = ActivitiConfigForm
     fieldsets = (
+        (None, {"fields": ("enabled",)}),
         (None, {"fields": ("root_url", "enterprise", "tenant"),}),
         (_("Auth"), {"fields": ("basic_auth_username", "basic_auth_password"),}),
     )

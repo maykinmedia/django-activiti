@@ -9,6 +9,7 @@ from django_activiti.models import ActivitiConfig
 @pytest.mark.django_db
 def test_config_model_url_ok():
     config = ActivitiConfig.get_solo()
+    config.enabled = True
 
     with requests_mock.Mocker() as m:
         m.get(
@@ -22,6 +23,7 @@ def test_config_model_url_ok():
 @pytest.mark.django_db
 def test_config_model_url_not_ok():
     config = ActivitiConfig.get_solo()
+    config.enabled = True
 
     with requests_mock.Mocker() as m:
         m.get(

@@ -6,8 +6,11 @@ from solo.models import SingletonModel
 
 
 class ActivitiConfig(SingletonModel):
-    """ configuration of Activiti service, including base url and credentials """
+    """
+    Configure the Activiti service.
+    """
 
+    enabled = models.BooleanField(_("enabled"), default=False)
     root_url = models.URLField(
         _("activiti root"),
         help_text=_("Root URL where the Activiti API is deployed."),
@@ -47,9 +50,12 @@ class ActivitiConfig(SingletonModel):
         super().save(*args, **kwargs)
 
     def clean(self):
+        from .client import get_client_class
+
         super().clean()
 
-        from .client import get_client_class
+        if not self.enabled:
+            return
 
         client = get_client_class()(config=self)
         try:

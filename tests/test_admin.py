@@ -8,6 +8,8 @@ from django_activiti.models import ActivitiConfig
 @pytest.mark.django_db
 def test_enter_basic_auth(requests_mock, django_app, admin_user):
     config = ActivitiConfig.get_solo()
+    config.enabled = True
+    config.save()
     assert config.auth_header == ""
     django_app.set_user(admin_user)
     requests_mock.get(
@@ -31,6 +33,10 @@ def test_enter_basic_auth(requests_mock, django_app, admin_user):
 
 @pytest.mark.django_db
 def test_select_process_definition(requests_mock, django_app, admin_user):
+    config = ActivitiConfig.get_solo()
+    config.enabled = True
+    config.save()
+
     django_app.set_user(admin_user)
     requests_mock.get(
         "https://activiti.example.com/activiti-app/api/repository/process-definitions",
