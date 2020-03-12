@@ -10,7 +10,14 @@ import requests
 from .models import ActivitiConfig
 from .types import JSONObject
 
+__all__ = ["get_client"]
+
 logger = logging.getLogger(__name__)
+
+
+def get_client(config: Optional[ActivitiConfig] = None) -> "Activiti":
+    client_class = get_client_class()
+    return client_class(config=config)
 
 
 def get_client_class() -> type:

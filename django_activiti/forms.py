@@ -73,6 +73,10 @@ class ActivitiConfigForm(forms.ModelForm):
 
 
 def get_process_definition_choices() -> List[Tuple[str, List[Choice]]]:
+    config = ActivitiConfig.get_solo()
+    if not config.enabled:
+        return []
+
     definitions = get_process_definitions()
 
     definitions = sorted(definitions, key=lambda d: (d.key, -d.version))

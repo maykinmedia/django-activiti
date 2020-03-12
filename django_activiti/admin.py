@@ -13,8 +13,8 @@ from .models import ActivitiConfig
 class ActivitiConfigAdmin(SingletonModelAdmin):
     form = ActivitiConfigForm
     fieldsets = (
-        (None, {"fields": ("enabled",)}),
-        (None, {"fields": ("root_url", "enterprise", "tenant"),}),
+        (None, {"fields": ("enabled",),}),
+        (_("Engine"), {"fields": ("root_url", "enterprise", "tenant"),}),
         (_("Auth"), {"fields": ("basic_auth_username", "basic_auth_password"),}),
     )
 
@@ -30,3 +30,17 @@ class ActivitiFieldsMixin:
             )
 
         return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+    def get_fields(self, request, obj=None):
+        config = ActivitiConfig.get_solo()
+        fields = super().get_fields(request, obj=obj)
+        if config.enabled:
+            return fields
+
+        # filter out the activiti fields
+        disabled_field_names = [
+            field.name
+            for field in self.model._meta.get_fields()
+            if isinstance(field, ProcessDefinitionField)
+        ]
+        return [name for name in fields if name not in disabled_field_names]
